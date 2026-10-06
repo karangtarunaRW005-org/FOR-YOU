@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Special Gift for kayla</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts: Poppins & Caveat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+            handwriting: ['Caveat', 'cursive'],
+          },
+          colors: {
+            romantic: {
+              50: '#fff1f2',
+              100: '#ffe4e6',
+              200: '#fecdd3',
+              300: '#fda4af',
+              400: '#fb7185',
+              500: '#f43f5e',
+              600: '#e11d48',
+            }
+          },
+          animation: {
+            'bounce-short': 'bounce 0.6s ease-in-out 2',
+            'float-slow': 'floatSlow 4s ease-in-out infinite',
+            'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            floatSlow: {
+              '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+              '50%': { transform: 'translateY(-10px) rotate(3deg)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html, body {
+      overscroll-behavior-y: none;
+      touch-action: manipulation;
+    }
+
+    .vibe-transition {
+      transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s ease;
+    }
+
+    .polaroid-card {
+      perspective: 1000px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .polaroid-card:hover {
+      transform: translateY(-8px) rotate(0deg) scale(1.02) !important;
+      z-index: 20;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14% { transform: scale(1.25); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.25); }
+      70% { transform: scale(1); }
+    }
+    .heart-beat {
+      display: inline-block;
+      animation: heartbeat 1.8s infinite;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: #f43f5e;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(244, 63, 94, 0.4);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body id="mainBody" class="vibe-transition bg-gradient-to-br from-pink-100 via-purple-100 to-rose-200 min-h-screen text-slate-800 font-sans pb-20 relative overflow-x-hidden selection:bg-pink-300">
+
+  <canvas id="bgCanvas" class="fixed inset-0 pointer-events-none z-0 w-full h-full"></canvas>
+
+  <header class="sticky top-0 z-40 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-white/50 dark:border-slate-800/50 px-3 sm:px-6 py-2.5 sm:py-3 shadow-sm">
+    <div class="max-w-2xl mx-auto flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="text-xl sm:text-2xl heart-beat">💖</span>
+        <span class="font-extrabold text-xs sm:text-sm tracking-tight text-slate-800 dark:text-rose-300">
+          For kayla
+        </span>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <button id="bgmBtn" onclick="toggleAudioBGM()" class="p-2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/80 dark:bg-slate-800/80 shadow border border-pink-200 dark:border-rose-900 flex items-center justify-center text-pink-500 hover:scale-105 active:scale-95 transition" title="Play Romantic BGM">
+          <i id="bgmIcon" class="fa-solid fa-music text-xs sm:text-sm"></i>
+        </button>
+
+        <div class="flex items-center gap-1 bg-white/80 dark:bg-slate-800/80 p-1 rounded-full shadow border border-pink-200 dark:border-rose-900">
+          <button onclick="changeVibe('sweet')" class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-pink-400 hover:scale-110 active:scale-95 transition shadow-sm" title="Sweet Pink"></button>
+          <button onclick="changeVibe('galaxy')" class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-purple-500 hover:scale-110 active:scale-95 transition shadow-sm" title="Pastel Galaxy"></button>
+          <button onclick="changeVibe('sunset')" class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-amber-500 hover:scale-110 active:scale-95 transition shadow-sm" title="Warm Sunset"></button>
+          <button onclick="changeVibe('cyber')" class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-900 border border-purple-400 hover:scale-110 active:scale-95 transition shadow-sm" title="Cyber Romantic"></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-3 sm:px-6 pt-4 sm:pt-6 relative z-10 space-y-6 sm:space-y-8">
+
+    <!-- HERO BANNER CARD -->
+    <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg rounded-3xl p-5 sm:p-8 shadow-xl border border-white/80 dark:border-slate-800 text-center relative overflow-hidden">
+      <div class="absolute -top-12 -right-12 w-36 h-36 bg-pink-400/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-12 -left-12 w-36 h-36 bg-purple-400/20 rounded-full blur-3xl pointer-events-none"></div>
+
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-pink-100 dark:bg-rose-950/80 text-pink-600 dark:text-rose-300 rounded-full text-[11px] sm:text-xs font-bold tracking-wider uppercase mb-3 border border-pink-200 dark:border-rose-800">
+        <i class="fa-solid fa-sparkles text-pink-500"></i> Interactive Gift Experience
+      </span>
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-800 dark:text-white mb-2 leading-tight">
+        Special Gift For You! 🎁✨
+      </h1>
+      <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
+        POKONYA AKU BUAT DENGAN SENANG HATI CIHUY
+      </p>
+    </div>
+
+    <!-- 2 POLAROID FOTO INTERAKTIF -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between px-1">
+        <h2 class="font-bold text-slate-800 dark:text-rose-300 text-sm sm:text-base flex items-center gap-2">
+          <i class="fa-solid fa-camera-retro text-pink-500"></i> Memori nya cuma 2 hahaha
+        </h2>
+        <span class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 italic">Tap foto untuk zoom</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+        <div onclick="openPhotoModal('photo2.jpeg', 'ini lucuu', '')" 
+             class="polaroid-card bg-white dark:bg-slate-800 p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl transform sm:-rotate-2 cursor-pointer border border-pink-100 dark:border-slate-700 shadow-md hover:shadow-xl">
+          <div class="overflow-hidden rounded-xl sm:rounded-2xl h-48 sm:h-56 bg-slate-100 dark:bg-slate-900 relative">
+            <img src="photo2.jpeg" 
+                 alt="Foto Memori 1" 
+                 class="w-full h-full object-cover transition duration-500 hover:scale-105"
+                 onerror="this.src='https://placehold.co/600x700/ffb6c1/ffffff?text=Our+Memory+1'">
+            <span class="absolute top-2 right-2 bg-black/40 backdrop-blur-md text-white text-[10px] px-2 py-0.5 rounded-full font-medium">#1 Memory</span>
+          </div>
+          <div class="pt-3 text-center">
+            <p class="font-handwriting text-2xl text-slate-800 dark:text-pink-300 font-bold">First Favorite Snap 📸</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5"></p>
+          </div>
+        </div>
+
+        <div onclick="openPhotoModal('photo1.jpeg', 'Senyum Paling Cantik ✨', '')" 
+             class="polaroid-card bg-wphoto2.jpegointer border border-pink-100 dark:border-slate-700 shadow-md hover:shadow-xl">
+          <div class="overflow-hidden rounded-xl sm:rounded-2xl h-48 sm:h-56 bg-slate-100 dark:bg-slate-900 relative">
+            <img src="photo1.jpeg" 
+                 alt="Foto Memori 2" 
+                 class="w-full h-full object-cover transition duration-500 hover:scale-105"
+                 onerror="this.src='https://placehold.co/600x700/ff758c/ffffff?text=Our+Memory+2'">
+            <span class="absolute top-2 right-2 bg-black/40 backdrop-blur-md text-white text-[10px] px-2 py-0.5 rounded-full font-medium">#2 Memory</span>
+          </div>
+          <div class="pt-3 text-center">
+            <p class="font-handwriting text-2xl text-slate-800 dark:text-pink-300 font-bold">Sweetest Smile 💕</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SURAT RAHASIA TERLIPAT -->
+    <section class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-xl border border-white/80 dark:border-slate-800">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-bold text-slate-800 dark:text-rose-300 text-sm sm:text-base flex items-center gap-2">
+          <i class="fa-solid fa-envelope-open-text text-rose-500"></i> Surat Rahasia
+        </h2>
+        <span class="text-xs text-pink-500 font-semibold animate-pulse">Klik amplop! ✉</span>
+      </div>
+
+      <div onclick="toggleEnvelope()" class="cursor-pointer group">
+        <div id="envelopeBox" class="bg-gradient-to-r from-rose-400 to-pink-500 dark:from-rose-900 dark:to-pink-900 rounded-2xl p-5 sm:p-6 text-white text-center shadow-lg relative overflow-hidden transition-all duration-500 transform group-hover:scale-[1.01]">
+          <div id="envelopeClosed" class="space-y-3 py-2 sm:py-4">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center text-2xl sm:text-3xl heart-beat">
+              💌
+            </div>
+            <p class="font-bold text-base sm:text-lg">Ada Pesan Spesial Dalam Amplop Ini</p>
+            <p class="text-xs text-pink-100">Klik di sini untuk membuka & membaca suratnya...</p>
+          </div>
+
+          <div id="envelopeOpened" class="hidden text-left bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 p-4 sm:p-6 rounded-xl shadow-inner text-xs sm:text-sm space-y-3 font-sans border-2 border-pink-200 dark:border-rose-900">
+            <div class="flex justify-between items-center border-b border-pink-100 dark:border-slate-700 pb-2">
+              <span class="font-handwriting text-2xl sm:text-3xl font-bold text-pink-600 dark:text-pink-400">Hai... 🌸</span>
+              <span class="text-[10px] bg-pink-100 text-pink-600 dark:bg-rose-950 dark:text-rose-300 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">Secret Letter</span>
+            </div>
+            <p class="leading-relaxed">
+              Gabanyak kata pokonya aku mau bilang makasih sama kamu udah bikin aku happy, maaf aku banyak kurangnya dan banyak kepedeannya hehe...
+            </p>
+            <p class="leading-relaxed">
+              Gift ini sengaja kubuat penuh warna dan fitur lucu khusus buat kamu. Tetap jadi dirimu yang baik, care, dan selalu tengil!
+            </p>
+            <div class="pt-2 text-right">
+              <p class="font-handwriting text-2xl text-rose-500 font-bold">Kembaran jefri nichol, ❤</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOVE METER SUPER AKURAT -->
+    <section class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-xl border border-white/80 dark:border-slate-800 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-slate-800 dark:text-rose-300 text-sm sm:text-base flex items-center gap-2">
+          <i class="fa-solid fa-gauge-high text-pink-500"></i> Seberapa keren dan kece aku 💖
+        </h2>
+        <span id="lovePercentage" class="text-xl sm:text-2xl font-extrabold text-rose-500">50%</span>
+      </div>
+
+      <div class="space-y-3">
+        <input type="range" 
+               id="loveMeterInput" 
+               min="1" 
+               max="100" 
+               value="50" 
+               oninput="handleLoveSlider(this.value)"
+               class="w-full h-3 bg-pink-100 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-pink-500">
+        
+        <div id="loveResponseBox" class="bg-pink-50 dark:bg-slate-800/80 border border-pink-200 dark:border-rose-900 rounded-2xl p-4 text-center transition-all duration-300">
+          <p id="loveResponseText" class="text-xs sm:text-sm font-semibold text-rose-600 dark:text-rose-400">
+            "Lumayan lah ya! Tapi yakin cuma segini? 🤔"
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- GACHA: "100 ALASAN KENAPA AKU SUKA KAMU" -->
+    <section class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-xl border border-white/80 dark:border-slate-800 text-center space-y-4">
+      <div class="flex items-center justify-center gap-2">
+        <i class="fa-solid fa-dice-d20 text-purple-500 text-lg"></i>
+        <h2 class="font-bold text-slate-800 dark:text-rose-300 text-sm sm:text-base">Gacha "Kenapa Aku Suka Kamu" ✨</h2>
+      </div>
+      <p class="text-xs text-slate-500 dark:text-slate-400">Tarik gacha untuk dapatkan alasan acak & manis hari ini!</p>
+
+      <div id="gachaDisplay" class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-slate-800 dark:to-purple-950/40 border-2 border-dashed border-purple-300 dark:border-purple-800 rounded-2xl p-4 sm:p-5 min-h-[90px] flex items-center justify-center transition-all">
+        <p class="text-xs sm:text-sm font-medium text-purple-700 dark:text-purple-300 italic">
+          "Klik tombol di bawah buat dapet alasannya! 🎯"
+        </p>
+      </div>
+
+      <button onclick="drawGachaReason()" 
+              class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-purple-500/25 active:scale-95 transition flex items-center justify-center gap-2 text-xs sm:text-sm">
+        <i class="fa-solid fa-arrows-rotate"></i> Tarik Alasan Acak!
+      </button>
+    </section>
+
+    <!-- RODA KEBERUNTUNGAN ROMANTIS (SPIN THE WHEEL) -->
+    <section class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-xl border border-white/80 dark:border-slate-800 text-center space-y-4">
+      <div class="flex items-center justify-between px-1">
+        <h2 class="font-bold text-slate-800 dark:text-rose-300 text-sm sm:text-base flex items-center gap-2">
+          <i class="fa-solid fa-dharmachakra text-rose-500"></i> Roda Keberuntungan 🎡
+        </h2>
+        <span class="text-xs text-pink-500 font-semibold">Putar & Klaim!</span>
+      </div>
+      <p class="text-xs text-slate-500 dark:text-slate-400">Test Kehokian</p>
+
+      <!-- Wheel Canvas Container -->
+      <div class="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto flex items-center justify-center py-2">
+        <!-- Wheel Pointer -->
+        <div class="absolute -top-1 left-1/2 -translate-x-1/2 z-20 text-rose-600 text-2xl filter drop-shadow">
+          <i class="fa-solid fa-location-pin fa-rotate-180"></i>
+        </div>
+        
+        <canvas id="wheelCanvas" width="280" height="280" class="w-full h-full drop-shadow-md"></canvas>
+
+        <!-- Center Spin Button -->
+        <button id="spinBtn" onclick="spinWheel()" class="absolute z-20 w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-rose-500 to-pink-500 text-white font-black text-xs sm:text-sm rounded-full shadow-lg border-4 border-white dark:border-slate-800 hover:scale-105 active:scale-95 transition flex items-center justify-center uppercase tracking-wider">
+          SPIN!
+        </button>
+      </div>
+
+      <!-- Result Log -->
+      <div id="wheelResultBox" class="bg-pink-50 dark:bg-slate-800 border border-pink-200 dark:border-rose-900 rounded-2xl p-4 text-center hidden">
+        <span class="text-[10px] font-bold bg-pink-200 text-pink-700 dark:bg-rose-950 dark:text-rose-300 px-2 py-0.5 rounded-full uppercase">Hadiah Kamu</span>
+        <h3 id="wheelResultText" class="font-extrabold text-slate-800 dark:text-white text-sm sm:text-base mt-1"></h3>
+      </div>
+    </section>
+
+    <!-- MINI QUIZ "SEBERAPA KENAL KAMU SAMA AKU?" -->
+    <section class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-xl border border-white/80 dark:border-slate-800 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-slate-800 dark:text-rose-300 text-sm sm:text-base flex items-center gap-2">
+          <i class="fa-solid fa-gamepad text-indigo-500"></i> Mini Quiz Romantis 🎮
+        </h2>
+        <span id="quizScoreBadge" class="text-xs bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-bold px-2.5 py-1 rounded-full">
+          Score: 0/3
+        </span>
+      </div>
+
+      <div id="quizContainer" class="space-y-3">
+        <p id="quizQuestion" class="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">
+          Loading Quiz...
+        </p>
+        <div id="quizOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+      </div>
+    </section>
+
+    <!-- JAWABAN FINAL & TOMBOL KABUR -->
+    <section id="finalQuestionBox" class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-xl border border-white/80 dark:border-slate-800 text-center space-y-5 relative">
+      <div class="inline-block p-3.5 bg-rose-100 dark:bg-rose-950 text-rose-500 rounded-full text-3xl heart-beat">
+        💖
+      </div>
+      <h2 class="text-lg sm:text-2xl font-extrabold text-slate-800 dark:text-white">
+        Apakah Kamu Senang Hari Ini? ✨
+      </h2>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 relative min-h-[90px] pt-2">
+        <button onclick="handleAcceptLove()" 
+                class="w-full sm:w-auto bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white font-extrabold py-3.5 px-8 rounded-2xl shadow-lg shadow-teal-500/30 transform active:scale-95 transition text-sm flex items-center justify-center gap-2 z-10">
+          <i class="fa-solid fa-heart"></i> Senang Banget! 🥰
+        </button>
+
+        <button id="runawayBtn" 
+                onmouseenter="escapeButton()" 
+                onclick="escapeButton()"
+                ontouchstart="escapeButton()"
+                class="w-full sm:w-auto bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-600 dark:text-slate-300 font-bold py-3.5 px-6 rounded-2xl transition-all duration-200 text-sm z-10">
+          Nggak Ah 😜
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL PHOTO ZOOM -->
+  <div id="photoModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm sm:max-w-md w-full p-4 space-y-3 relative shadow-2xl border border-white/20">
+      <button onclick="closePhotoModal()" class="absolute top-3 right-3 w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <img id="modalImg" src="" alt="Full Preview" class="w-full h-64 sm:h-80 object-cover rounded-2xl">
+      <div class="text-center pt-1">
+        <h3 id="modalTitle" class="font-bold text-slate-800 dark:text-white text-base sm:text-lg"></h3>
+        <p id="modalDesc" class="text-xs text-slate-500 dark:text-slate-400 mt-1"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastBox" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 hidden bg-slate-900/90 dark:bg-rose-950/90 text-white text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 backdrop-blur-md border border-white/20 max-w-[90vw] text-center">
+    <span id="toastIcon">✨</span>
+    <span id="toastMessage">Pesan Notification!</span>
+  </div>
+
+  <!-- TAG AUDIO ELEMEN UNTUK FILE MUSIK ASLI -->
+  <audio id="myAudio" src="Green Day - Last Night on Earth.mp3" loop></audio>
+
+  <script>
+    /* ========================================================
+       1. REAL AUDIO FILE BGM SYSTEM
+       ======================================================== */
+    let isBgmPlaying = false;
+
+    function toggleAudioBGM() {
+      const audio = document.getElementById('myAudio');
+      const btn = document.getElementById('bgmBtn');
+      const icon = document.getElementById('bgmIcon');
+
+      if (isBgmPlaying) {
+        audio.pause();
+        isBgmPlaying = false;
+        icon.className = "fa-solid fa-music text-xs sm:text-sm";
+        btn.classList.remove('bg-pink-500', 'text-white');
+        showToast("🔇 Musik Dihentikan");
+      } else {
+        audio.play().then(() => {
+          isBgmPlaying = true;
+          icon.className = "fa-solid fa-volume-high text-xs sm:text-sm animate-bounce";
+          btn.classList.add('bg-pink-500', 'text-white');
+          showToast("🎵 Pemutar Musik Aktif!");
+        }).catch(err => {
+          console.log("Error memutar audio:", err);
+          showToast("⚠️ Gagal memutar musik, pastikan file ada!");
+        });
+      }
+    }
+
+    /* ========================================================
+       WEB AUDIO API SFX SYSTEM
+       ======================================================== */
+    let audioCtx = null;
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playTone(freq, type = 'sine', duration = 0.2, gainValue = 0.1) {
+      try {
+        initAudioContext();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(gainValue, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) { console.log('Audio error:', e); }
+    }
+
+    function playSfx(type) {
+      if (type === 'click') playTone(523.25, 'sine', 0.1, 0.08);
+      else if (type === 'pop') playTone(659.25, 'triangle', 0.15, 0.12);
+      else if (type === 'win') {
+        playTone(523.25, 'sine', 0.15, 0.1);
+        setTimeout(() => playTone(659.25, 'sine', 0.15, 0.1), 120);
+        setTimeout(() => playTone(783.99, 'sine', 0.3, 0.12), 240);
+      }
+    }
+
+    /* ========================================================
+       2. VIBE THEME SWITCHER
+       ======================================================== */
+    function changeVibe(theme) {
+      playSfx('pop');
+      const body = document.getElementById('mainBody');
+      const html = document.documentElement;
+      html.classList.remove('dark');
+
+      if (theme === 'sweet') {
+        body.className = "vibe-transition bg-gradient-to-br from-pink-100 via-purple-100 to-rose-200 min-h-screen text-slate-800 font-sans pb-20 relative overflow-x-hidden";
+        showToast("🌸 Theme: Sweet Pink");
+      } else if (theme === 'galaxy') {
+        body.className = "vibe-transition bg-gradient-to-br from-purple-200 via-indigo-100 to-pink-200 min-h-screen text-slate-800 font-sans pb-20 relative overflow-x-hidden";
+        showToast("✨ Theme: Pastel Galaxy");
+      } else if (theme === 'sunset') {
+        body.className = "vibe-transition bg-gradient-to-br from-amber-100 via-rose-100 to-orange-200 min-h-screen text-slate-800 font-sans pb-20 relative overflow-x-hidden";
+        showToast("🌅 Theme: Warm Sunset");
+      } else if (theme === 'cyber') {
+        html.classList.add('dark');
+        body.className = "vibe-transition bg-slate-950 text-slate-100 min-h-screen font-sans pb-20 relative overflow-x-hidden dark";
+        showToast("🌙 Theme: Dark Cyber Romantic");
+      }
+      triggerConfetti(25);
+    }
+
+    /* ========================================================
+       3. RESPONSIVE PARTICLE CANVAS SYSTEM
+       ======================================================== */
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + Math.random() * 20;
+        this.size = Math.random() * 12 + 8;
+        this.speedY = Math.random() * 1.5 + 0.8;
+        this.opacity = Math.random() * 0.6 + 0.2;
+        this.char = ['💖', '🌸', '✨', '💕', '💗'][Math.floor(Math.random() * 5)];
+      }
+      update() {
+        this.y -= this.speedY;
+        if (this.y < -30) this.reset();
+      }
+      draw() {
+        ctx.globalAlpha = this.opacity;
+        ctx.font = `${this.size}px sans-serif`;
+        ctx.fillText(this.char, this.x, this.y);
+      }
+    }
+
+    for (let i = 0; i < 25; i++) particles.push(new Particle());
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* ========================================================
+       4. PHOTO MODAL HANDLERS
+       ======================================================== */
+    function openPhotoModal(src, title, desc) {
+      playSfx('pop');
+      document.getElementById('modalImg').src = src;
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalDesc').innerText = desc;
+      document.getElementById('photoModal').classList.remove('hidden');
+    }
+
+    function closePhotoModal() {
+      playSfx('click');
+      document.getElementById('photoModal').classList.add('hidden');
+    }
+
+    /* ========================================================
+       5. ENVELOPE / SECRET LETTER TOGGLE
+       ======================================================== */
+    let isEnvelopeOpen = false;
+    function toggleEnvelope() {
+      playSfx('win');
+      const closed = document.getElementById('envelopeClosed');
+      const opened = document.getElementById('envelopeOpened');
+
+      if (!isEnvelopeOpen) {
+        closed.classList.add('hidden');
+        opened.classList.remove('hidden');
+        triggerConfetti(50);
+        showToast("✉️ Surat Rahasia Berhasil Dibuka!");
+        isEnvelopeOpen = true;
+      }
+    }
+
+    /* ========================================================
+       6. LOVE METER CALCULATOR
+       ======================================================== */
+    function handleLoveSlider(val) {
+      document.getElementById('lovePercentage').innerText = `${val}%`;
+      const text = document.getElementById('loveResponseText');
+
+      if (val < 25) {
+        text.innerText = "Yakin cuma segini? Jahat banget ih! 🥺💔";
+      } else if (val < 60) {
+        text.innerText = "Lumayan lah ya, tapi masih bisa dinaikin lagi dong! 😜";
+      } else if (val < 90) {
+        text.innerText = "Wah tinggi juga! Makasih ya emang gua GANTENGG BETTT";
+      } else {
+        text.innerText = "LAH BARU TAU?";
+        triggerConfetti(30);
+      }
+    }
+
+    /* ========================================================
+       7. GACHA "KENAPA AKU SUKA KAMU"
+       ======================================================== */
+    const reasons = [
+      "TENGIL 😊",
+      "KEPEDEAN",
+      "SOTOII✨",
+      "LUCUU",
+      "JUMAWANYA",
+      "ADA SATU KATA TAPI AKU GENGSI"
+    ];
+
+    function drawGachaReason() {
+      playSfx('pop');
+      const display = document.getElementById('gachaDisplay');
+      display.classList.add('scale-95', 'opacity-50');
+      
+      setTimeout(() => {
+        const randomIndex = Math.floor(Math.random() * reasons.length);
+        display.innerHTML = `<p class="text-xs sm:text-sm font-semibold text-purple-800 dark:text-purple-300 animate-bounce-short">"${reasons[randomIndex]}"</p>`;
+        display.classList.remove('scale-95', 'opacity-50');
+        triggerConfetti(35);
+      }, 200);
+    }
+
+    /* ========================================================
+       8. RODA KEBERUNTUNGAN (SPIN THE WHEEL)
+       ======================================================== */
+    const wheelRewards = [
+      { label: "ice cream", color: "#f43f5e" },
+      { label: "kopi fm", color: "#a855f7" },
+      { label: "zonk", color: "#f59e0b" },
+      { label: "zonk", color: "#06b6d4" },
+      { label: "rumah, aamiin aja dulu", color: "#10b981" },
+      { label: "mobil, aamiin aja dulu", color: "#ec4899" }
+    ];
+
+    let currentAngle = 0;
+    let isSpinning = false;
+    const wheelCanvas = document.getElementById('wheelCanvas');
+    const wCtx = wheelCanvas.getContext('2d');
+
+    function drawWheel() {
+      const numSegments = wheelRewards.length;
+      const arcSize = (2 * Math.PI) / numSegments;
+      const radius = wheelCanvas.width / 2;
+
+      wCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+
+      for (let i = 0; i < numSegments; i++) {
+        const angle = currentAngle + i * arcSize;
+        wCtx.beginPath();
+        wCtx.fillStyle = wheelRewards[i].color;
+        wCtx.moveTo(radius, radius);
+        wCtx.arc(radius, radius, radius - 5, angle, angle + arcSize);
+        wCtx.lineTo(radius, radius);
+        wCtx.fill();
+
+        // Border line
+        wCtx.strokeStyle = "#ffffff";
+        wCtx.lineWidth = 2;
+        wCtx.stroke();
+
+        // Text Draw
+        wCtx.save();
+        wCtx.translate(radius, radius);
+        wCtx.rotate(angle + arcSize / 2);
+        wCtx.textAlign = "right";
+        wCtx.fillStyle = "#ffffff";
+        wCtx.font = "bold 10px Poppins, sans-serif";
+        wCtx.fillText(wheelRewards[i].label, radius - 15, 4);
+        wCtx.restore();
+      }
+    }
+    drawWheel();
+
+    function spinWheel() {
+      if (isSpinning) return;
+      isSpinning = true;
+      playSfx('pop');
+
+      const spinAngle = Math.floor(Math.random() * 360) + 1440; // 4 full turns + random
+      const duration = 4000;
+      const start = performance.now();
+      const initialAngle = currentAngle;
+
+      function animateSpin(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Ease out cubic
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        currentAngle = initialAngle + (spinAngle * Math.PI / 180) * easeOut;
+        drawWheel();
+
+        if (progress < 1) {
+          requestAnimationFrame(animateSpin);
+        } else {
+          isSpinning = false;
+          playSfx('win');
+          triggerConfetti(60);
+
+          // Calculate landed reward
+          const numSegments = wheelRewards.length;
+          const normalizedAngle = (currentAngle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+          // Pointer is at top (-PI/2)
+          const pointerAngle = (3 * Math.PI / 2 - normalizedAngle + 2 * Math.PI) % (2 * Math.PI);
+          const landedIndex = Math.floor(pointerAngle / ((2 * Math.PI) / numSegments));
+          
+          const result = wheelRewards[landedIndex];
+          const resultBox = document.getElementById('wheelResultBox');
+          const resultText = document.getElementById('wheelResultText');
+          
+          resultText.innerText = `🎉 Selamat! Kamu Dapet: ${result.label}`;
+          resultBox.classList.remove('hidden');
+          showToast(`🎡 Hore! Kamu dapet: ${result.label}`);
+        }
+      }
+
+      requestAnimationFrame(animateSpin);
+    }
+
+    /* ========================================================
+       9. MINI QUIZ SYSTEM
+       ======================================================== */
+    const quizData = [
+      {
+        q: "Apa minuman kesukaan yang paling sering dibeli?",
+        options: ["Matcha", "Kopi FM", "Intisari", "Es Teh Manis"],
+        ans: 1
+      },
+      {
+        q: "Hal apa yang kamu suka dari aku?",
+        options: ["KETCEH", "GANTENG", "LUCU", "SEMUANYA"],
+        ans: 0
+      },
+      {
+        q: "Kegiatan paling seru kalau lagi bareng?",
+        options: ["Nonton Movie & Kulineran", "Jalan-Jalan Random", "Deep Talk Malam Hari", "Semua jawaban benar! ✨"],
+        ans: 3
+      }
+    ];
+
+    let currentQuiz = 0;
+    let quizScore = 0;
+
+    function renderQuiz() {
+      if (currentQuiz >= quizData.length) {
+        document.getElementById('quizContainer').innerHTML = `
+          <div class="text-center py-4 space-y-2">
+            <div class="text-3xl">🎉</div>
+            <p class="font-bold text-slate-800 dark:text-white text-sm sm:text-base">Quiz Selesai! Score Kamu: ${quizScore}/${quizData.length}</p>
+            <p class="text-xs text-slate-500">Kamu emang cihuyy banget dah</p>
+          </div>
+        `;
+        return;
+      }
+
+      const q = quizData[currentQuiz];
+      document.getElementById('quizQuestion').innerText = `${currentQuiz + 1}. ${q.q}`;
+      
+      const optionsBox = document.getElementById('quizOptions');
+      optionsBox.innerHTML = '';
+      
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left bg-slate-100 dark:bg-slate-800 hover:bg-pink-100 dark:hover:bg-rose-950 text-slate-700 dark:text-slate-200 p-2.5 rounded-xl text-xs transition border border-slate-200 dark:border-slate-700 font-medium";
+        btn.innerText = opt;
+        btn.onclick = () => answerQuiz(idx);
+        optionsBox.appendChild(btn);
+      });
+    }
+
+    function answerQuiz(idx) {
+      if (idx === quizData[currentQuiz].ans) {
+        playSfx('win');
+        quizScore++;
+        showToast("✨ Jawaban Tepat! Keren banget!");
+      } else {
+        playSfx('pop');
+        showToast("😅 Hampir benar! Tapi tetep dapet poin cinta!");
+      }
+      currentQuiz++;
+      document.getElementById('quizScoreBadge').innerText = `Score: ${quizScore}/${quizData.length}`;
+      renderQuiz();
+    }
+    renderQuiz();
+
+    /* ========================================================
+       10. RUNAWAY BUTTON "NGGAK AH" LOGIC
+       ======================================================== */
+    function escapeButton() {
+      playSfx('pop');
+      const btn = document.getElementById('runawayBtn');
+      const x = (Math.random() - 0.5) * 220;
+      const y = (Math.random() - 0.5) * 140;
+      
+      btn.style.transform = `translate(${x}px, ${y}px)`;
+      showToast("Eits tombolnya kabur! Enggak bisa diklik 😜");
+    }
+
+    /* ========================================================
+       11. ACCEPT LOVE FINAL HANDLER
+       ======================================================== */
+    function handleAcceptLove() {
+      playSfx('win');
+      triggerConfetti(100);
+      showToast("YAAAY! Makasih yaa udah bikin hari ini bahagia banget! 🥰❤️");
+      
+      const box = document.getElementById('finalQuestionBox');
+      box.innerHTML = `
+        <div class="py-6 space-y-3">
+          <div class="text-5xl heart-beat">🥰💖✨</div>
+          <h2 class="text-2xl font-bold text-rose-600 dark:text-rose-400">Terima Kasih Banyak!</h2>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-xs mx-auto leading-relaxed">
+            Semoga hari-harimu selalu penuh dengan kebahagiaan ya!!
+          </p>
+        </div>
+      `;
+    }
+
+    /* ========================================================
+       12. UTILITY FUNCTIONS: CONFETTI & TOAST
+       ======================================================== */
+    function triggerConfetti(count = 50) {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: count,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#ff758c', '#ff7eb3', '#e0c3fc', '#8ec5fc', '#ffd166']
+        });
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastBox');
+      const toastMsg = document.getElementById('toastMessage');
+      toastMsg.innerText = msg;
+      toast.classList.remove('hidden');
+
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
